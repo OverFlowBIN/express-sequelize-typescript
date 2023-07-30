@@ -41,6 +41,12 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+interface IUser extends User {
+  PostCount: number;
+  FollowingCount: number;
+  FollowerCount: number;
+}
+
 router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate(
     'local',
@@ -78,7 +84,17 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
             ],
             attributes: { exclude: ['password'] },
           });
-          return res.json(fullUser);
+          if (!user) {
+            return res.status(404).send('no user');
+          }
+          const jsonUser = user.toJSON() as IUser;
+          jsonUser.PostCount = jsonUser.Posts ? jsonUser.Posts.length : 0;
+          jsonUser.FollowingCount = jsonUser.Followings
+            ? jsonUser.Followings.length
+            : 0;
+          jsonUser.FollowerCount = jsonUser.Followers
+            ? jsonUser.Followers.length
+            : 0;
         } catch (error) {
           console.error(error);
           next(error);
@@ -98,4 +114,20 @@ router.post('/logut', isLoggedIn, (req, res) => {
       });
     }
   });
+});
+
+router.get('/:id/followings', isLoggedIn, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        id: parseInt(req.params.id, 10) || (req.user && req.user.id) || 0,
+      },
+    });
+    if (!user) return res.status(404).send('no user');
+    const followers = await user.getFollwings({
+      attribute: ['id', 'nickname'],
+    });
+  } catch (error) {
+    console.error(error);
+  }
 });
