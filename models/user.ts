@@ -4,7 +4,7 @@ import {
   BelongsToManyGetAssociationsMixin,
   HasManyGetAssociationsMixin,
   BelongsToManyRemoveAssociationMixin,
-  BelongsToManyAddAssociationMixin,
+  BelongsToManyAddAssociationsMixin,
 } from 'sequelize';
 import { sequelize } from './squelize';
 import Post from './post';
@@ -22,11 +22,11 @@ class User extends Model {
   public readonly Followers?: User[];
   public readonly Followings?: User[];
 
-  public addFollowing!: BelongsToManyAddAssociationMixin<User, number>;
+  public addFollowing!: BelongsToManyAddAssociationsMixin<User, number>;
   public getFollowings!: BelongsToManyGetAssociationsMixin<User>;
-  public removeFollowings!: BelongsToManyRemoveAssociationMixin<User, number>;
+  public removeFollowing!: BelongsToManyRemoveAssociationMixin<User, number>;
   public getFollowers!: BelongsToManyGetAssociationsMixin<User>;
-  public removeFollowers!: BelongsToManyRemoveAssociationMixin<User, number>;
+  public removeFollower!: BelongsToManyRemoveAssociationMixin<User, number>;
   public getPosts!: HasManyGetAssociationsMixin<Post>;
 }
 
